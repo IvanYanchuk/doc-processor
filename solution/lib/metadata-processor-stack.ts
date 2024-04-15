@@ -16,19 +16,7 @@ export class MetadataProcessorStack extends cdk.Stack {
     super(scope, id, props);
 
     // Create an S3 bucket
-    const bucket = new s3.Bucket(this, 'DocsBucket', {
-        cors: [
-            {
-                allowedMethods: [
-                    cdk.aws_s3.HttpMethods.GET,
-                    cdk.aws_s3.HttpMethods.PUT,
-                    cdk.aws_s3.HttpMethods.POST,
-                ],
-                allowedOrigins: ['*'],
-                allowedHeaders: ['*'],
-            },
-        ],
-    });
+    const bucket = new s3.Bucket(this, 'DocsBucket');
 
     // Create a DynamoDB table
     const table = new dynamodb.Table(this, 'MetadataTable', {
@@ -51,35 +39,19 @@ export class MetadataProcessorStack extends cdk.Stack {
 
     metadataProcessorLambda.addToRolePolicy(new PolicyStatement({
         effect: Effect.ALLOW,
-        resources: [
-            table.tableArn
-        ],
-        actions:[
-            'dynamodb:PutItem',
-            'dynamodb:Scan',
-            'dynamodb:GetItem',
-            // 'dynamodb:UpdateItem',
-            // 'dynamodb:DescribeTable',
-            // 'dynamodb:DeleteItem',
-            // 'dynamodb:BatchWriteItem'
-        ]
+        resources: [ table.tableArn ],
+        actions:[ 'dynamodb:PutItem' ]
     }));
 
     metadataProcessorLambda.addToRolePolicy(new PolicyStatement({
         effect: Effect.ALLOW,
-        resources: [
-            queue.queueArn
-        ],
-        actions:[
-            'sqs:SendMessage',
-            'sqs:GetQueueAttributes',
-            'sqs:GetQueueUrl'
-        ]
+        resources: [ queue.queueArn ],
+        actions:[ 'sqs:SendMessage' ]
     }));
 
     metadataProcessorLambda.addToRolePolicy(new PolicyStatement({
         effect: Effect.ALLOW,
-        actions: ['s3:GetBucketNotification', 's3:PutBucketNotification'],
+        actions: [ 's3:GetBucketNotification' ],
         resources: [ bucket.bucketArn ]
     }));
 

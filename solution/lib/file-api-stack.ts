@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import { AuthorizationType, CognitoUserPoolsAuthorizer, EndpointType, MethodOptions, RestApi } from 'aws-cdk-lib/aws-apigateway';
+import { AuthorizationType, CognitoUserPoolsAuthorizer, MethodOptions, RestApi } from 'aws-cdk-lib/aws-apigateway';
 import { Bucket, IBucket } from 'aws-cdk-lib/aws-s3';
 import { Construct } from 'constructs';
 import { NodejsFunction } from 'aws-cdk-lib/aws-lambda-nodejs';
@@ -46,17 +46,13 @@ export class FileApiStack extends cdk.Stack {
         }
     });
 
-    const api = new RestApi(this, 'FileApi', {
-        binaryMediaTypes: ["*/*"],
-        endpointConfiguration: {
-            types: [EndpointType.EDGE]
-        }
-    });
+    const api = new RestApi(this, 'FileApi');
 
     const authorizer = new CognitoUserPoolsAuthorizer(this, "FileApiAuthorizer", {
         cognitoUserPools: [ userPool ],
         identitySource: 'method.request.header.Authorization'
     });
+
     authorizer._attachToApi(api);
 
     const optionWithAuth: MethodOptions = {
@@ -69,10 +65,6 @@ export class FileApiStack extends cdk.Stack {
     // Plug the Lambda function into API Gateway, and enable CORS
     const uploadFileResource = api.root.addResource('uploadFile');
     uploadFileResource.addMethod('POST', new cdk.aws_apigateway.LambdaIntegration(fileProcessorLambda), optionWithAuth);
-    uploadFileResource.addCorsPreflight({
-      allowOrigins: ['*'],
-      allowMethods: ['POST'],
-    });
 
     new cdk.CfnOutput(this, 'FileApiUserPoolId', {
         value: userPool.userPoolId
