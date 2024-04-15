@@ -26,7 +26,7 @@ async function handler(event: S3Event) {
 
         const command = new SendMessageCommand({
             QueueUrl: process.env.QUEUE_URL,
-            MessageBody: `File ${key} has been uploaded to bucket ${bucket}.`
+            MessageBody: JSON.stringify(item)
         });
 
         await sqsClient.send(command);

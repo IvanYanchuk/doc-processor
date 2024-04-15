@@ -1,6 +1,12 @@
-# Welcome to your CDK TypeScript project
+# Test assignment
 
-This is a blank project for CDK development with TypeScript.
+API Gateway - S3 - AWS Lambda - DynamoDb - SQS
+
+1. AWS API Gateway: Provide endpoint to upload file. Clients will use REST API to upload files to S3. AWS Lambda is used for upload.
+1. AWS S3: All files are uploaded here. When a new file gets uploaded into the specified S3 bucket, this should trigger a Lambda function.
+1. AWS Lambda: It is triggered whenever a new file is uploaded into the S3 bucket. This function should pick up the file's metadata.
+1. AWS DynamoDB: Stores file metadata.
+1. AWS SQS: When the Lambda function is triggered, it should put a message with the file's metadata into an SQS queue for further processing.
 
 The `cdk.json` file tells the CDK Toolkit how to execute your app.
 
