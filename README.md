@@ -8,8 +8,6 @@ API Gateway - S3 - AWS Lambda - DynamoDb - SQS
 1. AWS DynamoDB: Stores file metadata.
 1. AWS SQS: When the Lambda function is triggered, it should put a message with the file's metadata into an SQS queue for further processing.
 
-The `cdk.json` file tells the CDK Toolkit how to execute your app.
-
 ## Useful commands
 
 * `cdk deploy`  deploy this stack to your default AWS account/region
